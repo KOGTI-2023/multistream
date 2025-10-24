@@ -7,7 +7,7 @@ Multistream is a way to stream to multiple platforms at the same time, a feature
 
 ## Downloads 
 
- - [Windows](https://github.com/joaojlf4/multistream/releases)
+ - [Windows](https://github.com/joaojlf4/multistream/blob/master/windowsRelease/Multistream%200.2.2%20ia32.msi?raw=true)
 
 ## Usage
 After installing the version for windows (soon, multiplatform), open and add as many streams as you want. Now, in your broadcast software, set the server url to `rtmp://localhost:1935/live` in the stream settings (make sure port 1935 is not in use). You can set stream key as `preview` to get a demo of your stream (if you don't, leave stream key empty). Now, in Multistream, click on "Start Server". Start the stream normally in your streaming software, like OBS Studio.
@@ -25,4 +25,4 @@ Then, replace node_modules/node-media-server/node_relay_server.js file with the 
 Now you can start contributing to the project!
 
 ## Donate!
-If you enjoy this project, you can buy me a coffee: https://www.buymeacoffee.com/joaojlf4
+Now you can buy me a coffee: https://www.buymeacoffee.com/joaojlf4

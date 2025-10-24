@@ -8,13 +8,16 @@
  *
  * @flow
  */
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow } from "electron";
 import { autoUpdater } from "electron-updater";
 import log from "electron-log";
 import sourceMapSupport from "source-map-support";
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import electronDebug from "electron-debug";
 import ElectronStore from 'electron-store';
+import path from 'path';
+import os from 'os';
+
 // const { getWindowState, storeWindowState } = require('./services/persistConfig');
 
 /**
@@ -83,7 +86,8 @@ app.on("ready", async() => {
 	const store = new ElectronStore();
 	function createMainWindow() {
 
-		const { width, height, x, y } = store.get('bounds') || {
+		const { width, height, x, y } = 
+			store.get('bounds') || {
 				width: 980,
 				height: 600,
 				x: undefined,
@@ -91,7 +95,6 @@ app.on("ready", async() => {
 			};
 
 		mainWindow = new BrowserWindow({
-			backgroundColor: '#36393F',
 			width,
 			height,
 			x,
@@ -101,6 +104,7 @@ app.on("ready", async() => {
 			},
 			frame: false,
 		});
+	
 		mainWindow.loadURL(`file://${__dirname}/app.html`);			
 		mainWindow.webContents.on("did-finish-load", () => {
 			if (!mainWindow) {
@@ -114,17 +118,14 @@ app.on("ready", async() => {
 				mainWindow.focus();
 			}
 		});
-
-		let isStreaming = false;
-		ipcMain.on('setIsStreaming', (e, isStreamingState) => {
-			isStreaming = isStreamingState;
+	
+		mainWindow.on('close', () => {
+			store.set('bounds', mainWindow.getBounds());
 		})
 
-		mainWindow.on('close', (e) => {
-			if(isStreaming) {
-				e.preventDefault();
-				mainWindow.webContents.send('confirmClosing', true);
-			}
+		mainWindow.on("closed", () => {
+			mainWindow = null;
+
 		})
 	}
 	createMainWindow()

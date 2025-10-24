@@ -9,13 +9,9 @@ function Status() {
   // const [isPreviewAvaliable, setPreviewAvaliable] = useState(false);
 
   const status = useSelector(state => {
-    return state.statusReducer;
+    return state;
   });
 
-  useEffect(() => {
-    // checkPreview();
-    console.log(status);
-  }, [status]);
   // useEffect(() => {
   //   checkPreview();
   // }, []);
@@ -35,14 +31,23 @@ function Status() {
        <p> 3. Start transmission on the encoder as normal. </p>
      </header>
     <StatusContainer>
+      {
+        status.map((stat) => {
+          if(stat === 'live!') {
+            return <Preview
+                          key={stat}
+                          controls="false"
+                          url = "http://localhost:8000/live/preview.flv"
+                          isLive={true}
+                        />
+          }
+          return <span key={stat}>> {stat}</span>
+        })
+      }
+    </StatusContainer>
     {
-      status.map(item => {
-        if(item === 'live!') {
-          return <Preview url="http://localhost:8000/live/preview.flv" isMuted={true} isLive={true}/>
-        }else {
-        return <span key={item}>> {item}</span>
-        }
-      }) 
+    
+      
     /* <ReactFlvPlayer
           url = "http://localhost:8000/live/steam1.flv"
           heigh = "150"
@@ -50,8 +55,6 @@ function Status() {
           isMuted={true}
           isLive={true}
         /> */}
-    </StatusContainer>
-    
   </Container>);
 }
 

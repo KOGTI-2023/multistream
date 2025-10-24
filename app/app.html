@@ -44,16 +44,12 @@
     </script>
     <script>
       const customTitlebar = require('custom-electron-titlebar');
-      const path = require('path');
-      const { remote } = require('electron');
       const titlebar = new customTitlebar.Titlebar({
           backgroundColor: customTitlebar.Color.fromHex('#333'),
           menu: false,
           titleHorizontalAlignment: "left",    
           unfocusEffect: false,
-          title: "Multistream",
-          titleStyle: "",
-          icon: '../../icon.png'
+          title: "Multistream"
       });
       titlebar.updateBackground("#202225")
 

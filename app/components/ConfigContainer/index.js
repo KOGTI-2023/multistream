@@ -11,18 +11,13 @@ import {
   } from './styles';
 import Input from '../Input';
 import StreamMockup from '../StreamMockup';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import ElectronStore from 'electron-store';
-import { ipcRenderer } from 'electron';
 
 import createStream from '../../stream';
 import crypto from 'crypto';
 
 function ConfigContainer() {
-
-  const isStreaming = useSelector(state => {
-    return state.isStreamingReducer;
-  })
 
   const store = new ElectronStore();
 
@@ -36,29 +31,18 @@ function ConfigContainer() {
   const [selectValue, setSelectValue] = useState('custom');
   const [serverUrl, setServerUrl] = useState('');
   const [key, setKey] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [border, setBorder] = useState(0);
   
   useEffect(() => {
     setStreams(store.get('streams') || []);
-  }, []);
-
-  useEffect(() => {
-    ipcRenderer.send('setIsStreaming', isStreaming);
-  }, [isStreaming]);
+  }, [])
 
   useEffect(() => {
     setStream(createStream(streams));
     store.set('streams', streams);
   }, [streams]);
-
-  ipcRenderer.on('confirmClosing', (e, arg) => {
-    dispatch({
-      type: "UPDATE_IS_PREVENT_VISIBLE",
-      isVisible: arg
-    })
-    console.log("passou")
-  })
 
   function handleSelectChange(e){
     switch (e.target.value) {
@@ -132,11 +116,7 @@ function ConfigContainer() {
     if(streams.length === 0) return setNoStream(true);
     setNoStream(false);
     if(!isStreaming) {
-      ipcRenderer.send('setStreamingTrue', true);
-      dispatch({
-        type: "UPDATE_IS_STREAMING",
-        isStreaming: true,
-      });
+      setIsStreaming(true);
       stream.run();
       dispatch({
         type: "CLEAR_STATUS",
@@ -146,6 +126,12 @@ function ConfigContainer() {
         status: { message: "Waiting for encoder connection..." }
       })
       stream.on('preConnect', () => { console.log('preconnect') })
+      stream.on('postConnect', () => { 
+        dispatch({
+          type: "UPDATE_STATUS",
+          status: { message: "Encoder connected, starting stream..." }
+        });
+       })
       stream.on('doneConnect', () => { 
         dispatch({
           type: "UPDATE_STATUS",
@@ -169,11 +155,7 @@ function ConfigContainer() {
       
     }else {
       stream.stop();
-      ipcRenderer.send('setStreamingFalse', false);
-      dispatch({
-        type: "UPDATE_IS_STREAMING",
-        isStreaming: false,
-      });
+      setIsStreaming(false)
       dispatch({ 
         type: "UPDATE_STATUS",
         status: {
